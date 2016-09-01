@@ -56,8 +56,24 @@ public class TagView extends View {
         mTagPaint.setColor(tagColor);
         mTagPaint.setDither(true);
         mTagPaint.setStyle(Paint.Style.STROKE);
-        mTagPaint.setStrokeJoin(Paint.Join.ROUND);
-        mTagPaint.setStrokeCap(Paint.Cap.SQUARE);
+
+        /**
+         * 该方法用来设置我们画笔的 笔触风格 ，比如：ROUND，表示是圆角的笔触。那么什么叫笔触呢，
+         * 其实很简单，就像我们现实世界中的笔，如果你用圆珠笔在纸上戳一点，那么这个点一定是个圆，
+         * 即便很小，它代表了笔的笔触形状，如果我们把一支铅笔笔尖削成方形的，
+         * 那么画出来的线条会是一条弯曲的“矩形”，这就是笔触的意思。除了ROUND，
+         * Paint.Cap还提供了另外两种类型：SQUARE和BUTT
+         */
+        mTagPaint.setStrokeCap(Paint.Cap.ROUND);
+
+        /**
+         * ROUND:让画的线圆滑
+         * 设置结合处的样子，Miter:结合处为锐角， Round:结合处为圆弧：BEVEL：结合处为直线。
+         *
+         * 这个方法用于设置接合处的形态，就像你用代码画了一条线，
+         * 但是这条线其实是由无数条小线拼接成的，拼接处的形状就由该方法指定。可选参数是：BEVEL，MITER，ROUND。
+         */
+        mTagPaint.setStrokeJoin(Paint.Join.MITER);
 
         mTextPaint = new Paint();
         mTextPaint.setTextSize(tagTextSize);
@@ -69,6 +85,9 @@ public class TagView extends View {
         mLinePaint.setStrokeWidth(1);
         mLinePaint.setStyle(Paint.Style.STROKE);
 
+        /**
+         * 当画笔样式（style）为STROKE或FILL_OR_STROKE时(空心样式时)，设置笔刷的粗细度。
+         */
         mTagPaint.setStrokeWidth(tagWidth);
     }
 
