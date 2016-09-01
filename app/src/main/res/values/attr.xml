@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="TagView">
+        <attr name="tagWidth" format="dimension"/>
+        <attr name="cornerDistance" format="dimension"/>
+        <attr name="tagTextSize" format="dimension"/>
+        <attr name="tagTextColor" format="color"/>
+        <attr name="tagColor" format="color"/>
+        <attr name="tagText" format="string"/>
+        <attr name="tagPosition" format="enum">
+            <enum name="left_top" value="0"/>
+            <enum name="right_top" value="1"/>
+            <enum name="right_bottom" value="2"/>
+            <enum name="left_bottom" value="3"/>
+        </attr>
+    </declare-styleable>
+</resources>
