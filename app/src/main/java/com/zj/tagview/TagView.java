@@ -10,6 +10,8 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 /**
  * Created by zj on 2016/8/31.
@@ -64,7 +66,7 @@ public class TagView extends View {
          * 那么画出来的线条会是一条弯曲的“矩形”，这就是笔触的意思。除了ROUND，
          * Paint.Cap还提供了另外两种类型：SQUARE和BUTT
          */
-        mTagPaint.setStrokeCap(Paint.Cap.ROUND);
+        mTagPaint.setStrokeCap(Paint.Cap.SQUARE);
 
         /**
          * ROUND:让画的线圆滑
@@ -92,19 +94,51 @@ public class TagView extends View {
     }
 
     @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-        int parentWidth = ((View) getParent()).getMeasuredWidth();
-        int parentHeight = ((View) getParent()).getMeasuredHeight();
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int width = (int) (cornerDistance + tagWidth * Math.sqrt(2));
+        setMeasuredDimension(width, width);
+    }
 
-        System.out.println("parentWidth=" + parentWidth);
-        System.out.println("parentHeight=" + parentHeight);
+    @Override
+    public void setLayoutParams(ViewGroup.LayoutParams params) {
+        super.setLayoutParams(params);
+        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) params;
+        switch (tagPosition) {
+            case 0:
+                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
+                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 0);
 
+                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                break;
+            case 1:
+                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0);
+                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 0);
+
+                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                break;
+            case 2:
+                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0);
+                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
+
+                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                break;
+            case 3:
+                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
+                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
+
+                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                break;
+        }
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         float tagDistance = (float) (cornerDistance + tagWidth / 2 * Math.sqrt(2));
+        System.out.println("tagPosition=" + tagPosition);
         switch (tagPosition) {
             case 0:
                 pointStart.x = 0;
@@ -112,13 +146,18 @@ public class TagView extends View {
                 pointEnd.x = tagDistance;
                 pointEnd.y = 0;
 
+                mLinePaint.setColor(Color.GREEN);
                 canvas.drawLine(tagDistance, 0, tagDistance, getMeasuredHeight(), mLinePaint);
+                mLinePaint.setColor(Color.YELLOW);
                 canvas.drawLine(0, tagDistance, getMeasuredWidth(), tagDistance, mLinePaint);
 
+                mLinePaint.setColor(Color.RED);
                 canvas.drawLine(0, tagDistance / 2, getMeasuredWidth(), tagDistance / 2, mLinePaint);
+                mLinePaint.setColor(Color.BLACK);
                 canvas.drawLine(tagDistance / 2, 0, tagDistance / 2, getMeasuredHeight(), mLinePaint);
                 break;
             case 1:
+                //pointStart.x = (float) (tagWidth / 2 * Math.sqrt(2));
                 pointStart.x = getMeasuredWidth() - tagDistance;
                 pointStart.y = 0;
                 pointEnd.x = getMeasuredWidth();
@@ -140,7 +179,7 @@ public class TagView extends View {
         path.reset();
         path.moveTo(pointStart.x, pointStart.y);
         path.lineTo(pointEnd.x, pointEnd.y);
-        //path.close();
+        //path.close();不能加
         canvas.drawPath(path, mTagPaint);
 
         Rect textBounds = new Rect();
@@ -154,22 +193,23 @@ public class TagView extends View {
                 (float) (Math.sqrt((textBounds.height() * textBounds.height() / 2))) / 2,
                 mTextPaint);
 
+        mLinePaint.setColor(Color.WHITE);
         canvas.drawPath(path, mLinePaint);
     }
 
     private int dip2px(int dip) {
-        return (int)(getContext().getResources().getDisplayMetrics().density * dip + 0.5f);
+        return (int) (getContext().getResources().getDisplayMetrics().density * dip + 0.5f);
     }
 
-    public void setTagWidth(int tagWidth){
+    public void setTagWidth(int tagWidth) {
         this.tagWidth = dip2px(tagWidth);
         mTagPaint.setStrokeWidth(this.tagWidth);
-        invalidate();
+        requestLayout();
     }
 
-    public void setCornerDistance(int cornerDistance){
+    public void setCornerDistance(int cornerDistance) {
         this.cornerDistance = dip2px(cornerDistance);
-        invalidate();
+        requestLayout();
     }
 
     public void setTagTextSize(int textSize) {
@@ -178,18 +218,18 @@ public class TagView extends View {
         invalidate();
     }
 
-    public void setTagPosition(int position){
+    public void setTagPosition(int position) {
         this.tagPosition = position;
-        invalidate();
+        setLayoutParams(getLayoutParams());
     }
 
-    public void setText(int resId){
+    public void setText(int resId) {
         String text = getContext().getString(resId);
         this.text = text;
         invalidate();
     }
 
-    public void setTagColor(int color){
+    public void setTagColor(int color) {
         tagColor = color;
         mTagPaint.setColor(tagColor);
         invalidate();

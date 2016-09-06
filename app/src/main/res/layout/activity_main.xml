@@ -19,7 +19,7 @@
             android:id="@+id/tagview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:tagPosition="left_bottom"
+            app:tagPosition="left_top"
             app:tagWidth="30dp"
             app:tagText="未过期">
         </com.zj.tagview.TagView>
